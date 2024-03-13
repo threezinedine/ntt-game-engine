@@ -47,13 +47,17 @@ namespace ntt
          * @param rid The resource ID.
          * @return The resource object pointer (do not to be freed later).
          */
-        virtual ResourceObject *GetResourceById(uint8_t rid) = 0;
+        virtual Ref<ResourceObject> GetResourceById(uint8_t rid) = 0;
     };
 
+    void InitResourceManager();
     ResourceManager *GetResourceManager();
+    void ReleaseResourceManager();
 } // namespace ntt
 
+#define INIT_RESOURCE_MANAGER() ntt::InitResourceManager()
 #define LOAD_RESOURCES(path) ntt::GetResourceManager()->LoadResources(path)
 #define CLEAR_RESOURCES() ntt::GetResourceManager()->ClearResources()
 #define SET_SCOPE(scope) ntt::GetResourceManager()->SetScope(scope)
 #define GET_RESOURCE_BY_ID(rid) ntt::GetResourceManager()->GetResourceById(rid)
+#define RELEASE_RESOURCE_MANAGER() ntt::ReleaseResourceManager()

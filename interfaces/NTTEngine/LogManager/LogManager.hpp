@@ -17,11 +17,15 @@ namespace ntt
         virtual void Fatal(LogMessage message) = 0;
     };
 
+    void InitLogManager();
     LogManager *GetLogManager();
+    void ReleaseLogManager();
 } // namespace ntt
 
+#define INIT_LOG_MANAGER() ntt::InitLogManager()
 #define LOG_INFO(message) ntt::GetLogManager()->Info(ntt::LogMessage(__FILE__, __LINE__, message))
 #define LOG_DEBUG(message) ntt::GetLogManager()->Debug(ntt::LogMessage(__FILE__, __LINE__, message))
 #define LOG_WARN(message) ntt::GetLogManager()->Warn(ntt::LogMessage(__FILE__, __LINE__, message))
 #define LOG_ERROR(message) ntt::GetLogManager()->Error(ntt::LogMessage(__FILE__, __LINE__, message))
 #define LOG_FATAL(message) ntt::GetLogManager()->Fatal(ntt::LogMessage(__FILE__, __LINE__, message))
+#define RELEASE_LOG_MANAGER() ntt::ReleaseLogManager()

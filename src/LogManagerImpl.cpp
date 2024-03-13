@@ -2,7 +2,7 @@
 
 namespace ntt
 {
-    LogManagerImpl LogManagerImpl::m_Ins;
+    LogManagerImpl *LogManagerImpl::m_Ins;
 
     LogManagerImpl::LogManagerImpl()
     {
@@ -37,8 +37,35 @@ namespace ntt
         std::cout << "[FATAL] " << message.ToString() << std::endl;
     }
 
+    void LogManagerImpl::InitLogManagerIns()
+    {
+        if (m_Ins == nullptr)
+        {
+            m_Ins = new LogManagerImpl();
+        }
+    }
+
+    void LogManagerImpl::ReleaseLogManagerIns()
+    {
+        if (m_Ins != nullptr)
+        {
+            delete m_Ins;
+            m_Ins = nullptr;
+        }
+    }
+
+    void InitLogManager()
+    {
+        LogManagerImpl::InitLogManagerIns();
+    }
+
     LogManager *GetLogManager()
     {
         return LogManagerImpl::GetLogManagerIns();
+    }
+
+    void ReleaseLogManager()
+    {
+        LogManagerImpl::ReleaseLogManagerIns();
     }
 } // namespace ntt

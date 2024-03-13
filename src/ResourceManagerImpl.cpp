@@ -1,35 +1,29 @@
 #include <NTTEngine/ResourceManager/ResourceManagerImpl.hpp>
 #include <NTTEngine/LogManager/LogManager.hpp>
 #include <NTTEngine/Common.hpp>
+#include <NTTEngine/ResourceManager/ResourceDef.hpp>
 
 #include <nlohmann/json.hpp>
 
 namespace ntt
 {
-    ResourceManagerImpl ResourceManagerImpl::m_Instance;
+    ResourceManagerImpl *ResourceManagerImpl::m_Instance;
+
+    static Ref<ResourceObject> ExtractObjectFromJsonObject(nlohmann::json obj);
 
     ResourceManagerImpl::ResourceManagerImpl()
+        : m_CurrentScope(RESOURCE_SCOPE_GLOBAL)
     {
     }
 
     ResourceManagerImpl::~ResourceManagerImpl()
     {
+        ClearResources();
     }
 
     void ResourceManagerImpl::LoadResources(const std::string &resourcePath)
     {
-        // Read content from the resource file
-        std::ifstream file(resourcePath);
-
-        if (!file.is_open())
-        {
-            LOG_ERROR("Failed to open resource file: " + resourcePath);
-            return;
-        }
-
-        std::string content((std::istreambuf_iterator<char>(file)),
-                            std::istreambuf_iterator<char>());
-        file.close();
+        std::string content = ReadJsonFileContent(resourcePath);
 
         // Parse the string into JSON
         nlohmann::json jsonObject;
@@ -49,49 +43,20 @@ namespace ntt
         {
             for (const auto &element : jsonObject)
             {
-                // Check the "id" field exists and is an integer
-                if (!element.contains("id") || !element["id"].is_number_integer())
+                Ref<ResourceObject> resource = ExtractObjectFromJsonObject(element);
+
+                if (resource == nullptr)
                 {
-                    LOG_WARN("Resource must have an integer id.");
+                    LOG_WARN("Failed to extract resource from JSON object.");
                     continue;
                 }
-
-                // Check the "scope" field exists and is an integer
-                if (!element.contains("scope") || !element["scope"].is_number_integer())
+                else
                 {
-                    LOG_WARN("Resource must have an integer scope.");
-                    continue;
+                    m_Resources[element["scope"]].push_back(resource);
                 }
-
-                // Check the "type" field exists and is an integer
-                if (!element.contains("type") || !element["type"].is_number_integer())
-                {
-                    LOG_WARN("Resource must have an integer type.");
-                    continue;
-                }
-
-                // Check the "filePath" field exists and is a string
-                if (!element.contains("filePath") || !element["filePath"].is_string())
-                {
-                    LOG_WARN("Resource must have a string \"filePath\".");
-                    continue;
-                }
-
-                // TODO: Check the "id" field is unique
-
-                Ref<ResourceObject> resource = MakeRef<ResourceObject>(
-                    element["id"], element["scope"],
-                    element["filePath"],
-                    static_cast<ResourceType>(element["type"]));
-
-                m_Resources[element["scope"]].push_back(resource);
             }
 
-            // Load all global resources
-            for (const auto &resource : m_Resources[0])
-            {
-                resource->Load();
-            }
+            LoadResouceByScope(0);
         }
         else
         {
@@ -99,23 +64,148 @@ namespace ntt
         }
     }
 
+    std::string ResourceManagerImpl::ReadJsonFileContent(const std::string &path)
+    {
+        std::ifstream file(path);
+
+        if (!file.is_open())
+        {
+            LOG_ERROR("Failed to open resource file: " + path);
+            return "";
+        }
+
+        std::string content((std::istreambuf_iterator<char>(file)),
+                            std::istreambuf_iterator<char>());
+        file.close();
+
+        return content;
+    }
+
+    Ref<ResourceObject> ExtractObjectFromJsonObject(nlohmann::json obj)
+    {
+        // Check the "id" field exists and is an integer
+        if (!obj.contains("id") || !obj["id"].is_number_integer())
+        {
+            LOG_WARN("Resource must have an integer id.");
+            return nullptr;
+        }
+
+        // Check the "scope" field exists and is an integer
+        if (!obj.contains("scope") || !obj["scope"].is_number_integer())
+        {
+            LOG_WARN("Resource must have an integer scope.");
+            return nullptr;
+        }
+
+        // Check the "type" field exists and is an integer
+        if (!obj.contains("type") || !obj["type"].is_number_integer())
+        {
+            LOG_WARN("Resource must have an integer type.");
+            return nullptr;
+        }
+
+        // Check the "filePath" field exists and is a string
+        if (!obj.contains("filePath") || !obj["filePath"].is_string())
+        {
+            LOG_WARN("Resource must have a string \"filePath\".");
+            return nullptr;
+        }
+
+        // TODO: Check the "id" field is unique
+
+        Ref<ResourceObject> resource = MakeRef<ResourceObject>(
+            obj["id"], obj["scope"],
+            obj["filePath"],
+            static_cast<ResourceType>(obj["type"]));
+
+        return resource;
+    }
+
+    void ResourceManagerImpl::LoadResouceByScope(uint8_t scope)
+    {
+        for (const auto &resource : m_Resources[scope])
+        {
+            resource->Load();
+        }
+    }
+
+    void ResourceManagerImpl::UnloadResourcesByScope(uint8_t scope)
+    {
+        for (const auto &resource : m_Resources[scope])
+        {
+            resource->Unload();
+        }
+    }
+
     void ResourceManagerImpl::ClearResources()
     {
-        LOG_INFO("Clear resources: ");
+        // Unload all resources with all keys from the dictionary
+        for (const auto &pair : m_Resources)
+        {
+            UnloadResourcesByScope(pair.first);
+        }
     }
 
     void ResourceManagerImpl::SetScope(uint8_t scope)
     {
-        LOG_INFO("Set scope: " + std::to_string(scope));
+        if (m_CurrentScope != RESOURCE_SCOPE_GLOBAL)
+        {
+            UnloadResourcesByScope(m_CurrentScope);
+        }
+
+        if (scope != RESOURCE_SCOPE_GLOBAL)
+        {
+            LoadResouceByScope(scope);
+        }
+
+        m_CurrentScope = scope;
     }
 
-    ResourceObject *ResourceManagerImpl::GetResourceById(uint8_t rid)
+    Ref<ResourceObject> ResourceManagerImpl::GetResourceById(uint8_t rid)
     {
+        for (const auto &pair : m_Resources)
+        {
+            for (const auto &resource : pair.second)
+            {
+                if (resource->GetId() == rid)
+                {
+                    return resource;
+                }
+            }
+        }
+
         return nullptr;
+    }
+
+    void ResourceManagerImpl::InitResourceManagerIns()
+    {
+        if (m_Instance == nullptr)
+        {
+            m_Instance = new ResourceManagerImpl();
+        }
+    }
+
+    void ResourceManagerImpl::ReleaseResourceManagerIns()
+    {
+        if (m_Instance != nullptr)
+        {
+            delete m_Instance;
+            m_Instance = nullptr;
+        }
+    }
+
+    void InitResourceManager()
+    {
+        ResourceManagerImpl::InitResourceManagerIns();
     }
 
     ResourceManager *GetResourceManager()
     {
         return ResourceManagerImpl::GetResourceManagerInstance();
+    }
+
+    void ReleaseResourceManager()
+    {
+        ResourceManagerImpl::ReleaseResourceManagerIns();
     }
 }

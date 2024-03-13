@@ -70,8 +70,11 @@ namespace ntt
          * @brief The custom resource loading process
          *      This is the place where the resource is actually loaded
          *      Other resource specific loading process should be implemented here
+         *
+         * @return true if the resource is loaded successfully
+         *          false if the resource is failed to load
          */
-        virtual void LoadImpl();
+        virtual bool LoadImpl();
 
         /**
          * @brief The custom resource unloading process
@@ -101,5 +104,10 @@ namespace ntt
          * @brief The resource type
          */
         ResourceType m_Type;
+
+        /**
+         * @brief The flag to indicate whether the resource is loaded (false as default)
+         */
+        bool m_Loaded;
     };
 } // namespace ntt

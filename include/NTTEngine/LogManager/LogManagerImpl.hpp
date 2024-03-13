@@ -11,13 +11,15 @@ namespace ntt
         void Error(LogMessage message);
         void Fatal(LogMessage message);
 
-        static LogManagerImpl *GetLogManagerIns() { return &m_Ins; }
+        static LogManagerImpl *GetLogManagerIns() { return m_Ins; }
+        static void InitLogManagerIns();
+        static void ReleaseLogManagerIns();
 
     protected:
         LogManagerImpl();
         ~LogManagerImpl();
 
     private:
-        static LogManagerImpl m_Ins;
+        static LogManagerImpl *m_Ins;
     };
 } // namespace ntt

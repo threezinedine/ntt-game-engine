@@ -2,7 +2,8 @@
 
 int main(void)
 {
-    LOG_INFO("Hello world");
-    LOG_WARN("Hello world");
+    LOG_INFO("Initializing ...");
+
+    LOG_INFO("Releasing ...");
     return 0;
 }

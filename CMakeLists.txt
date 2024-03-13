@@ -8,6 +8,12 @@ file(
     src/*.cpp
 )
 
+option(DEBUG "Debug mode" ON)
+
+if (DEBUG)
+    add_compile_definitions(_DEBUG)
+endif()
+
 add_subdirectory(./vendors)
 
 add_library(

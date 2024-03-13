@@ -1,0 +1,26 @@
+[
+    {
+        "id": 0,
+        "scope": 0,
+        "filePath": "C:/Users/Acer/OneDrive - Hanoi University of Science and Technology/Pictures/hust.png",
+        "type": 0
+    },
+    {
+        "id": 1,
+        "scope": 1,
+        "filePath": "C:/Users/Acer/OneDrive - Hanoi University of Science and Technology/Pictures/test.jpg",
+        "type": 0
+    },
+    {
+        "id": 2,
+        "scope": 1,
+        "filePath": "C:/Users/Acer/OneDrive - Hanoi University of Science and Technology/Pictures/wiring-diagram.png",
+        "type": 0
+    },
+    {
+        "id": 3,
+        "scope": 2,
+        "filePath": "C:/Users/Acer/OneDrive - Hanoi University of Science and Technology/Pictures/Picture1.png",
+        "type": 0
+    }
+]

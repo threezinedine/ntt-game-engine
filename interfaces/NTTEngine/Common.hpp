@@ -34,4 +34,10 @@ namespace ntt
 
     template <typename K, typename V>
     using Dictionary = std::map<K, V>;
+
+    template <typename T, typename U>
+    Ref<T> Cast(const Ref<U> &ref)
+    {
+        return std::dynamic_pointer_cast<T>(ref);
+    }
 } // namespace ntt

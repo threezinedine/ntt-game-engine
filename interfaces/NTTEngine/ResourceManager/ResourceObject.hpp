@@ -65,6 +65,13 @@ namespace ntt
          */
         void Unload();
 
+        /**
+         * @brief Check whether the resource is loaded
+         *
+         * @return true if the resource is loaded
+         */
+        inline bool IsLoaded() const { return m_Loaded; }
+
     protected:
         /**
          * @brief The custom resource loading process

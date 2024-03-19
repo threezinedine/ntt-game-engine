@@ -2,6 +2,7 @@
 #include <NTTEngine/LogManager/LogManager.hpp>
 #include <NTTEngine/Common.hpp>
 #include <NTTEngine/ResourceManager/ResourceDef.hpp>
+#include <NTTEngine/GraphicManager/GraphicResource.hpp>
 
 #include <nlohmann/json.hpp>
 
@@ -18,7 +19,7 @@ namespace ntt
 
     ResourceManagerImpl::~ResourceManagerImpl()
     {
-        ClearResources();
+        // ClearResources();
     }
 
     void ResourceManagerImpl::LoadResources(const std::string &resourcePath)
@@ -112,11 +113,22 @@ namespace ntt
         }
 
         // TODO: Check the "id" field is unique
+        Ref<ResourceObject> resource;
 
-        Ref<ResourceObject> resource = MakeRef<ResourceObject>(
-            obj["id"], obj["scope"],
-            obj["filePath"],
-            static_cast<ResourceType>(obj["type"]));
+        switch (static_cast<ResourceType>(obj["type"]))
+        {
+        case ResourceType::RT_GRAPHICS:
+            resource = MakeRef<GraphicResource>(obj["id"],
+                                                obj["scope"],
+                                                obj["filePath"]);
+            break;
+
+        default:
+            resource = MakeRef<ResourceObject>(
+                obj["id"], obj["scope"],
+                obj["filePath"],
+                static_cast<ResourceType>(obj["type"]));
+        }
 
         return resource;
     }
@@ -167,7 +179,7 @@ namespace ntt
         {
             for (const auto &resource : pair.second)
             {
-                if (resource->GetId() == rid)
+                if (resource->GetRID() == rid)
                 {
                     return resource;
                 }

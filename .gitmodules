@@ -1,6 +1,6 @@
 [submodule "vendors/nlohmann-json"]
 	path = vendors/nlohmann-json
 	url = git@github.com:nlohmann/json.git
-[submodule "vendors\\sfml"]
-	path = vendors\\sfml
+[submodule "vendors/sfml"]
+	path = vendors/sfml
 	url = git@github.com:SFML/SFML.git

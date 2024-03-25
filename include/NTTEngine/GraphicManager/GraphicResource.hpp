@@ -1,7 +1,6 @@
 #pragma once
 #include <NTTEngine/ResourceManager/ResourceManager.hpp>
-#include <SDL3/SDL.h>
-#include <SDL3_image/SDL_image.h>
+#include <SFML/Graphics.hpp>
 
 namespace ntt
 {
@@ -12,17 +11,16 @@ namespace ntt
                         const std::string &filePath);
 
         virtual ~GraphicResource();
-        inline float GetWidth() const { return static_cast<float>(m_Width); }
-        inline float GetHeight() const { return static_cast<float>(m_Height); }
-        inline SDL_Texture *GetTexture() const { return m_Texture; }
+        inline int GetWidth() const { return m_Texture != nullptr ? m_Texture->getSize().x : 0; }
+        inline int GetHeight() const { return m_Texture != nullptr ? m_Texture->getSize().y : 0; }
+        inline sf::Sprite &GetSprite() { return *m_Sprite; }
 
     protected:
         bool LoadImpl() override;
         void UnloadImpl() override;
 
     private:
-        SDL_Texture *m_Texture;
-        int m_Width;
-        int m_Height;
+        sf::Sprite *m_Sprite;
+        sf::Texture *m_Texture;
     };
 } // namespace ntt

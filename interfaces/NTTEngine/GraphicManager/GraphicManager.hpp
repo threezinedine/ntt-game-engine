@@ -16,10 +16,13 @@ namespace ntt
         virtual void Update() = 0;
         virtual bool ShouldWindowClosed() = 0;
 
-        virtual void Draw(uint8_t id, float x, float y) = 0;
+        virtual void Draw(uint8_t rid, float x, float y) = 0;
+        virtual void DrawSprite(uint8_t rid, float x, float y,
+                                float frameWidth, float frameHeight,
+                                unsigned int changePerMiliseconds) = 0;
         virtual void BeginFrame() = 0;
         virtual void EndFrame() = 0;
-        virtual void *GetRenderer() = 0;
+        virtual void *GetWindow() = 0;
     };
 
     void InitGraphicManager();

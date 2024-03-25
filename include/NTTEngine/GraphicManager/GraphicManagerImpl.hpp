@@ -1,7 +1,8 @@
 #pragma once
 
 #include <NTTEngine/GraphicManager/GraphicManager.hpp>
-#include <SDL3/SDL.h>
+#include <SFML/Graphics.hpp>
+#include "GraphicRenderObject.hpp"
 
 namespace ntt
 {
@@ -13,12 +14,14 @@ namespace ntt
                        const std::string &title,
                        bool fullScreen = false) override;
         void Update() override;
-        inline bool ShouldWindowClosed() override { return m_ShouldWindowClosed; }
+        inline bool ShouldWindowClosed() override { return !m_Window->isOpen(); }
 
-        void Draw(uint8_t id, float x, float y) override;
+        void Draw(uint8_t rid, float x, float y) override;
+        void DrawSprite(uint8_t rid, float x, float y, float frameWidth,
+                        float frameHeight, unsigned int changePerMiliseconds) override;
         void BeginFrame() override;
         void EndFrame() override;
-        inline void *GetRenderer() override { return m_Renderer; }
+        inline void *GetWindow() override { return m_Window; }
 
         static void InitGraphicManagerIns();
         static GraphicManagerImpl *GetGraphicManagerIns();
@@ -35,8 +38,9 @@ namespace ntt
 
         bool m_ShouldWindowClosed;
 
-        SDL_Window *m_Window;
-        SDL_Renderer *m_Renderer;
+        sf::RenderWindow *m_Window;
+
+        Dictionary<uint8_t, Ref<GraphicRenderObject>> m_RenderObjects;
 
         static GraphicManagerImpl *m_Ins;
     };

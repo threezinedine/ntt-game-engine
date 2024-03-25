@@ -1,8 +1,11 @@
+#define SDL_MAIN_HANDLED
 #include <NTTEngine/GraphicManager/GraphicManagerImpl.hpp>
 #include <NTTEngine/LogManager/LogManager.hpp>
-#include <SDL3/SDL.h>
+#include <SFML/Graphics.hpp>
 #include <NTTEngine/ResourceManager/ResourceManager.hpp>
 #include <NTTEngine/GraphicManager/GraphicResource.hpp>
+#include <NTTEngine/GraphicManager/GraphicRenderObject.hpp>
+#include <NTTEngine/GraphicManager/GraphicSpriteRenderObject.hpp>
 
 namespace ntt
 {
@@ -10,17 +13,13 @@ namespace ntt
 
     GraphicManagerImpl::GraphicManagerImpl()
         : m_Width(0), m_Height(0), m_Title(""), m_FullScreen(false),
-          m_ShouldWindowClosed(false), m_Window(nullptr),
-          m_Renderer(nullptr)
+          m_ShouldWindowClosed(false), m_Window(nullptr)
     {
     }
 
     GraphicManagerImpl::~GraphicManagerImpl()
     {
-        SDL_DestroyRenderer(m_Renderer);
-        SDL_DestroyWindow(m_Window);
-        IMG_Quit();
-        SDL_Quit();
+        delete m_Window;
     }
 
     void GraphicManagerImpl::NewWindow(unsigned int width, unsigned int height,
@@ -32,56 +31,20 @@ namespace ntt
         m_Title = title;
         m_FullScreen = fullScreen;
 
-        // Initialize SDL
-        if (SDL_Init(SDL_INIT_VIDEO) < 0)
-        {
-            std::stringstream ss;
-            ss << "SDL could not initialize! SDL_Error: " << SDL_GetError() << std::endl;
-            LOG_ERROR(ss.str());
-            return;
-        }
-
-        // Create window
-        m_Window = SDL_CreateWindow(m_Title.c_str(), m_Width, m_Height, SDL_EVENT_WINDOW_SHOWN);
-
-        if (m_Window == nullptr)
-        {
-            std::stringstream ss;
-            ss << "Window could not be created! SDL_Error: " << SDL_GetError() << std::endl;
-            LOG_ERROR(ss.str());
-            return;
-        }
-
-        // Create renderer for window
-        m_Renderer = SDL_CreateRenderer(m_Window, NULL, SDL_RENDERER_ACCELERATED);
-        if (m_Renderer == nullptr)
-        {
-            std::stringstream ss;
-            ss << "Renderer could not be created! SDL_Error: " << SDL_GetError() << std::endl;
-            LOG_ERROR(ss.str());
-            return;
-        }
-
-        // Init PNG loading
-        if (IMG_Init(IMG_INIT_PNG) != IMG_INIT_PNG)
-        {
-            std::stringstream ss;
-            ss << "SDL_image could not initialize! SDL_image Error: " << IMG_GetError() << std::endl;
-            LOG_ERROR(ss.str());
-            return;
-        }
+        m_Window = new sf::RenderWindow(sf::VideoMode(sf::Vector2(width, height)), title);
+        m_Window->setFramerateLimit(60);
     }
 
     void GraphicManagerImpl::Update()
     {
-        SDL_Event event;
+        sf::Event event;
 
-        while (SDL_PollEvent(&event) != 0)
+        while (m_Window->pollEvent(event))
         {
-            if (event.type == SDL_EVENT_QUIT)
+            if (event.type == sf::Event::Closed)
             {
                 LOG_INFO("Quit event detected");
-                m_ShouldWindowClosed = true;
+                m_Window->close();
                 return;
             }
         }
@@ -89,24 +52,38 @@ namespace ntt
 
     void GraphicManagerImpl::BeginFrame()
     {
-        SDL_RenderClear(m_Renderer);
+        m_Window->clear(sf::Color::Black);
     }
 
     void GraphicManagerImpl::EndFrame()
     {
-        SDL_RenderPresent(m_Renderer);
+        m_Window->display();
     }
 
-    void GraphicManagerImpl::Draw(uint8_t id, float x, float y)
+    void GraphicManagerImpl::Draw(uint8_t rid, float x, float y)
     {
-        auto resource = GET_RESOURCE_BY_ID(id);
-        if (resource != nullptr && resource->IsLoaded())
+        if (m_RenderObjects.find(rid) == m_RenderObjects.end())
         {
-            auto graphicResource = Cast<GraphicResource>(resource);
-            SDL_FRect rect = {x, y, graphicResource->GetWidth(), graphicResource->GetHeight()};
-
-            SDL_RenderTexture(m_Renderer, graphicResource->GetTexture(), NULL, &rect);
+            auto renderObject = MakeRef<GraphicRenderObject>(rid);
+            m_RenderObjects[rid] = renderObject;
         }
+
+        m_RenderObjects[rid]->Draw(x, y);
+    }
+
+    void GraphicManagerImpl::DrawSprite(uint8_t rid, float x, float y,
+                                        float frameWidth, float frameHeight,
+                                        unsigned int changePerMiliseconds)
+    {
+        if (m_RenderObjects.find(rid) == m_RenderObjects.end())
+        {
+            auto renderObject = MakeRef<GraphicSpriteRenderObject>(rid, frameWidth,
+                                                                   frameHeight, changePerMiliseconds);
+            Cast<GraphicSpriteRenderObject>(renderObject)->Play();
+            m_RenderObjects[rid] = renderObject;
+        }
+
+        m_RenderObjects[rid]->Draw(x, y);
     }
 
     void GraphicManagerImpl::InitGraphicManagerIns()

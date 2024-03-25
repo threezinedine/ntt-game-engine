@@ -4,5 +4,11 @@
         "scope": 0,
         "filePath": "C:/Users/Acer/OneDrive - Hanoi University of Science and Technology/Pictures/hust.png",
         "type": 0
+    },
+    {
+        "id": 2,
+        "scope": 0,
+        "filePath": "C:/Users/Acer/C_Language/ntt-game-engine/resources/images/characters.png",
+        "type": 0
     }
 ]

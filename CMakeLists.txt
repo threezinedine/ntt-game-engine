@@ -16,10 +16,6 @@ endif()
 
 add_subdirectory(./vendors)
 
-# find SDL3
-find_package(SDL3 REQUIRED PATHS C:/MinGW/SDL3)
-find_package(SDL3_image REQUIRED PATHS C:/MinGW/SDL3_image)
-
 add_library(
     ${PROJECT_NAME}
     SHARED
@@ -37,9 +33,10 @@ target_link_libraries(
     ${PROJECT_NAME}
     PUBLIC
     nlohmann_json
-    SDL3::SDL3-shared
-    SDL3_image::SDL3_image-shared
+    mingw32
+    SFML::Graphics
 )
+
 
 add_subdirectory(
     ./examples

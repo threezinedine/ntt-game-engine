@@ -21,21 +21,21 @@ add_custom_command(
     ${CMAKE_CURRENT_BINARY_DIR}
 )
 
-add_custom_command(
-    TARGET ${PROJECT_NAME}
-    POST_BUILD
-    COMMAND ${CMAKE_COMMAND} -E copy_if_different
-    C:/MinGW/SDL3/bin/SDL3.dll
-    ${CMAKE_CURRENT_BINARY_DIR}
+set(
+    NEEDED_DLL_FILES
+    C:/Users/Acer/C_Language/C++/CPlusPlusLibs/SDL2_image/SDL_image-release-2.8.2/build/SDL2_image.dll
+    C:/Users/Acer/C_Language/C++/CPlusPlusLibs/SDL2/SDL-release-2.30.1/build/SDL2.dll
 )
 
-add_custom_command(
-    TARGET ${PROJECT_NAME}
-    POST_BUILD
-    COMMAND ${CMAKE_COMMAND} -E copy_if_different
-    C:/MinGW/SDL3_image/bin/SDL3_image.dll
-    ${CMAKE_CURRENT_BINARY_DIR}
-)
+foreach(FILE ${NEEDED_DLL_FILES})
+    add_custom_command(
+        TARGET ${PROJECT_NAME}
+        POST_BUILD
+        COMMAND ${CMAKE_COMMAND} -E copy_if_different
+        ${FILE}
+        ${CMAKE_CURRENT_BINARY_DIR}
+    )
+endforeach()
 
 target_link_libraries(
     ${PROJECT_NAME}

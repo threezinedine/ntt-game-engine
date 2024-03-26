@@ -1,4 +1,5 @@
 #include "NTTEngine/TimeUtils/TimeUtils.hpp"
+#include "NTTEngine/LogManager/LogManager.hpp"
 #include <chrono>
 
 namespace ntt
@@ -25,6 +26,8 @@ namespace ntt
                                std::chrono::system_clock::now().time_since_epoch())
                                .count();
 
-        return currentTime - m_StartTime >= m_TimeInMilliseconds;
+        auto result = currentTime - m_StartTime >= m_TimeInMilliseconds;
+
+        return result;
     }
 } // namespace ntt

@@ -19,9 +19,9 @@ int main(int argc, char **argv)
             GET_GRAPHIC_MANAGER()->Update();
             GET_GRAPHIC_MANAGER()->BeginFrame();
 
-            // GET_GRAPHIC_MANAGER()->Draw(1, 100, 100);
+            GET_GRAPHIC_MANAGER()->Draw(1, 0, 0);
             // GET_GRAPHIC_MANAGER()->Draw(2, 0, 0);
-            GET_GRAPHIC_MANAGER()->DrawSprite(2, 100, 100, 16, 16, 10000);
+            GET_GRAPHIC_MANAGER()->DrawSprite(2, 100, 100, 16, 16, 500);
 
             GET_GRAPHIC_MANAGER()->EndFrame();
         }

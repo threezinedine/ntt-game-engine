@@ -78,7 +78,8 @@ namespace ntt
         if (m_RenderObjects.find(rid) == m_RenderObjects.end())
         {
             auto renderObject = MakeRef<GraphicSpriteRenderObject>(rid, frameWidth,
-                                                                   frameHeight, changePerMiliseconds);
+                                                                   frameHeight,
+                                                                   changePerMiliseconds);
             Cast<GraphicSpriteRenderObject>(renderObject)->Play();
             m_RenderObjects[rid] = renderObject;
         }

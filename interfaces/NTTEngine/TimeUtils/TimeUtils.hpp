@@ -13,6 +13,6 @@ namespace ntt
 
     private:
         unsigned int m_TimeInMilliseconds;
-        unsigned int m_StartTime;
+        long long m_StartTime;
     };
 } // namespace ntt

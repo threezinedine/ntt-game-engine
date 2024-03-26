@@ -86,6 +86,7 @@ namespace ntt
 			if (m_IsPlaying && m_TimeTrigger.IsTriggered())
 			{
 				NextFrame();
+				// LOG_INFO("Current Frame: " + std::to_string(m_CurrentFrameRowIndex) + "x" + std::to_string(m_CurrentFrameColIndex) + " Row: " + std::to_string(m_Row) + " Col: " + std::to_string(m_Col) + " FrameWidth: " + std::to_string(m_FrameWidth) + " FrameHeight: " + std::to_string(m_FrameHeight));
 				m_TimeTrigger.Reset();
 			}
 		}

@@ -20,8 +20,8 @@ int main(int argc, char **argv)
             GET_GRAPHIC_MANAGER()->BeginFrame();
 
             GET_GRAPHIC_MANAGER()->Draw(1, 0, 0);
-            // GET_GRAPHIC_MANAGER()->Draw(2, 0, 0);
-            GET_GRAPHIC_MANAGER()->DrawSprite(2, 100, 100, 16, 16, 500);
+            // GET_GRAPHIC_MANAGER()->Draw(1, 300, 300, 100, 100);
+            GET_GRAPHIC_MANAGER()->DrawSprite(2, 100, 100, 16, 16, 500, 50, 50);
 
             GET_GRAPHIC_MANAGER()->EndFrame();
         }

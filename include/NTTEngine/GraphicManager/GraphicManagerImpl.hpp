@@ -16,9 +16,11 @@ namespace ntt
         void Update() override;
         inline bool ShouldWindowClosed() override { return !m_Window->isOpen(); }
 
-        void Draw(uint8_t rid, float x, float y) override;
+        void Draw(uint8_t rid, float x, float y,
+                  unsigned int width, unsigned int height) override;
         void DrawSprite(uint8_t rid, float x, float y, float frameWidth,
-                        float frameHeight, unsigned int changePerMiliseconds) override;
+                        float frameHeight, unsigned int changePerMiliseconds,
+                        unsigned int width, unsigned int height) override;
         void BeginFrame() override;
         void EndFrame() override;
         inline void *GetWindow() override { return m_Window; }

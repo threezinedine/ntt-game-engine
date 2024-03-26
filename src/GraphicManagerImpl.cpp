@@ -60,7 +60,8 @@ namespace ntt
         m_Window->display();
     }
 
-    void GraphicManagerImpl::Draw(uint8_t rid, float x, float y)
+    void GraphicManagerImpl::Draw(uint8_t rid, float x, float y,
+                                  unsigned int width, unsigned int height)
     {
         if (m_RenderObjects.find(rid) == m_RenderObjects.end())
         {
@@ -68,12 +69,13 @@ namespace ntt
             m_RenderObjects[rid] = renderObject;
         }
 
-        m_RenderObjects[rid]->Draw(x, y);
+        m_RenderObjects[rid]->Draw(x, y, width, height);
     }
 
     void GraphicManagerImpl::DrawSprite(uint8_t rid, float x, float y,
                                         float frameWidth, float frameHeight,
-                                        unsigned int changePerMiliseconds)
+                                        unsigned int changePerMiliseconds,
+                                        unsigned int width, unsigned int height)
     {
         if (m_RenderObjects.find(rid) == m_RenderObjects.end())
         {
@@ -84,7 +86,7 @@ namespace ntt
             m_RenderObjects[rid] = renderObject;
         }
 
-        m_RenderObjects[rid]->Draw(x, y);
+        m_RenderObjects[rid]->Draw(x, y, width, height);
     }
 
     void GraphicManagerImpl::InitGraphicManagerIns()

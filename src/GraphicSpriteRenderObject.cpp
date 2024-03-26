@@ -64,7 +64,7 @@ namespace ntt
 		}
 	}
 
-	void GraphicSpriteRenderObject::Draw(int x, int y)
+	void GraphicSpriteRenderObject::Draw(int x, int y, unsigned int width, unsigned int height)
 	{
 		auto resource = GET_RESOURCE_BY_ID(GetRID());
 
@@ -80,13 +80,17 @@ namespace ntt
 			sprite.setTextureRect(portion);
 			sprite.setPosition(sf::Vector2f(x, y));
 
+			if (width != -1 && height != -1)
+			{
+				sprite.setScale(sf::Vector2f(width / sprite.getGlobalBounds().width, height / sprite.getGlobalBounds().height));
+			}
+
 			auto window = static_cast<sf::RenderWindow *>(GetGraphicManager()->GetWindow());
 			window->draw(sprite);
 
 			if (m_IsPlaying && m_TimeTrigger.IsTriggered())
 			{
 				NextFrame();
-				// LOG_INFO("Current Frame: " + std::to_string(m_CurrentFrameRowIndex) + "x" + std::to_string(m_CurrentFrameColIndex) + " Row: " + std::to_string(m_Row) + " Col: " + std::to_string(m_Col) + " FrameWidth: " + std::to_string(m_FrameWidth) + " FrameHeight: " + std::to_string(m_FrameHeight));
 				m_TimeTrigger.Reset();
 			}
 		}

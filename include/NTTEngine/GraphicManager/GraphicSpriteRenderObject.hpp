@@ -17,7 +17,7 @@ namespace ntt
         void Stop();
         void Update();
 
-        virtual void Draw(int x, int y) override;
+        virtual void Draw(int x, int y, unsigned int width, unsigned int height) override;
 
     protected:
         void NextFrame();

@@ -13,7 +13,7 @@ namespace ntt
 
         inline uint8_t GetRID() const { return m_RID; }
 
-        virtual void Draw(int x, int y);
+        virtual void Draw(int x, int y, unsigned int width = -1, unsigned int height = -1);
 
     private:
         uint8_t m_RID;
